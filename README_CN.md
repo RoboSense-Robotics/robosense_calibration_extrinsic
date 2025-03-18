@@ -21,7 +21,7 @@
 
 ## 2. 数据样例
 
-[demo数据包下载](https://cdn.robosense.cn/AC1calibration_extrinsic.zip)
+[demo数据包下载](https://cdn.robosense.cn/AC_wiki/calibration_extrinsic.zip)
 
 <div align="center">
     <img src="https://cdn.robosense.cn/AC_wiki/straight_data.gif" alt="mesh" />
@@ -114,7 +114,3 @@ ros2 bag play xxxx.db3 --remap /rs_lidar/points:=/circle/rs_lidar/points # demo�
 ```
 
 （数据集中录制的topic在不同域名下，可同时播放数据，互不干扰）
-
-## 5. License
-
-该仓库在 [**GPLv2**](http://www.gnu.org/licenses/) 协议下开源

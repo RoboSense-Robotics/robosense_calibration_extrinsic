@@ -21,7 +21,7 @@ This repository adapts the caliration from LiDar To BaseLink
 
 ## 2. Data Demo
 
-[Sample Data](https://cdn.robosense.cn/AC1calibration_extrinsic.zip)
+[Sample Data](https://cdn.robosense.cn/AC_wiki/calibration_extrinsic.zip)
 
 <div align="center">
     <img src="https://cdn.robosense.cn/AC_wiki/straight_data.gif" alt="mesh" />
@@ -108,7 +108,3 @@ ros2 bag play xxxx.db3 --remap /rs_lidar/points:=/straight/rs_lidar/points # The
 ```bash
 ros2 bag play xxxx.db3 --remap /rs_lidar/points:=/circle/rs_lidar/points # The demo data has already been remapped; no additional conversion is required.
 ```
-
-## 5. License
-
-The source code of this package is released under [**GPLv2**](http://www.gnu.org/licenses/) license.
