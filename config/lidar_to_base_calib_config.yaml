@@ -1,0 +1,10 @@
+LIDAR:
+    straight_lidar_topic: "/straight/rs_lidar/points"
+    circle_lidar_topic: "/circle/rs_lidar/points"
+    cloud_size: 10
+    lidar_calibration_file: "/home/sti/1_catkin/cali_catkin/src/robosense_calibration_extrinsic/config/test_lidar_calibration.yaml"
+BASE:
+    lidar_registration_config_file: "/home/sti/1_catkin/cali_catkin/src/robosense_calibration_extrinsic/config/default_config/registration_config.yaml"
+    anticlockwise: true
+    forward: true
+    save_path: "/home/sti/data/ros2/ros2_save_rs_lidar_pcd/"

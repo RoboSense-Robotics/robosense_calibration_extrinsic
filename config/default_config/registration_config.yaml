@@ -1,0 +1,6 @@
+NDT:
+  LeafSize: [0.5, 0.5, 0.5]
+  StepSize: 0.05
+  Resolution: 1
+  MaxIteration: 50
+  Epsilon: 1e-6
