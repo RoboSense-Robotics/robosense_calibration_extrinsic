@@ -23,7 +23,6 @@
 
 #include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/filters/voxel_grid.h>
@@ -33,7 +32,7 @@ namespace robosense {
 namespace calib {
 namespace factory_calibration {
 struct NDTRegistrationParam {
-  std::vector<double> leaf_size;
+  double leaf_size;
   double step_size = 0;
   double resolution = 0;
   int max_iteration = 0;
@@ -50,8 +49,6 @@ class BaseCalibration {
   NDTRegistrationParam ndt_param_;
 
   pcl::NormalDistributionsTransform<pcl::PointXYZI, pcl::PointXYZI> ndt_;
-  pcl::ApproximateVoxelGrid<pcl::PointXYZI> approximate_voxel_filter_;
-  // pcl::VoxelGrid<pcl::PointXYZI> approximate_voxel_filter_;
 
   rclcpp::Node::SharedPtr ros_node_;
 
@@ -59,8 +56,8 @@ class BaseCalibration {
 
   void registrationParamSet();
 
-  pcl::PointCloud<pcl::PointXYZI>::Ptr getNDTMatch(const pcl::PointCloud<pcl::PointXYZI>::Ptr &_source_cloud,
-                                                   const pcl::PointCloud<pcl::PointXYZI>::Ptr &_target_cloud,
+  pcl::PointCloud<pcl::PointXYZI>::Ptr getNDTMatch(pcl::PointCloud<pcl::PointXYZI>::Ptr &_source_cloud,
+                                                   pcl::PointCloud<pcl::PointXYZI>::Ptr &_target_cloud,
                                                    const Eigen::Matrix4f &_init_tf, Eigen::Matrix4f &_match_tf);
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr getFilterCloud(pcl::PointCloud<pcl::PointXYZI> & input_cloud);
@@ -72,12 +69,18 @@ class BaseCalibration {
                                         const bool _anticlockwise,
                                         const bool _forward);
 
+  std::vector<Eigen::Matrix4f> getPointCloudToFirstRegistration(std::vector<pcl::PointCloud<pcl::PointXYZI>> & _cloud_vec, std::vector<Eigen::Matrix4f> & _pos_tf_vec);
+
 public:
   BaseCalibration();
   ~BaseCalibration();
   bool loadConfig(const std::string _config_path, rclcpp::Node::SharedPtr _ros_node);
-  std::vector<double> executeCalibration(std::vector<pcl::PointCloud<pcl::PointXYZI>> & _straight_cloud_vec,
+  std::vector<double> executeLidarToBodyCalibration(std::vector<pcl::PointCloud<pcl::PointXYZI>> & _straight_cloud_vec,
     std::vector<pcl::PointCloud<pcl::PointXYZI>> & _circle_cloud_vec);
+
+  std::vector<double> executeLidarToArmCalibration(std::vector<pcl::PointCloud<pcl::PointXYZI>> & _cloud_vec, std::vector<Eigen::Matrix4f> & _pos_tf_vec);
+
+  void handEyeCali(const std::string _pose_folder_path);
 };
 
 }  // namespace factory_calibration

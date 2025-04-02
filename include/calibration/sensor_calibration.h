@@ -32,7 +32,6 @@ namespace factory_calibration {
 class SensorCalibration {
  private:
   std::string config_path_;
-  std::string lidar_registration_config_file_;
   std::string lidar_calibration_file_;
 
   int cloud_size_;

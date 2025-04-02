@@ -23,11 +23,19 @@
 #include <numeric>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <ctime>
+#include <iostream>
+#include <math.h>
+#include <fstream>
+#include <sstream>
 
 #include <eigen3/Eigen/Dense>
 #include <Eigen/Geometry>
+#include <Eigen/Core>
 
 #include "common_variable.h"
+#include <pcl/octree/octree_pointcloud_pointvector.h>
 
 namespace robosense {
 namespace calib {
@@ -78,7 +86,7 @@ std::vector<std::string> getJpgFilesInDirectory(const std::string& directory);
 std::string formatNumberString(const int num);
 std::string getCurrentTime();
 
-void mkPath(const std::string& path);
+void mkPath(const std::string &path);
 
 /*
  * Transition between 4*4 Transform-Matrix and 6-dof(r-t) Pose-Vector(Euler or
@@ -94,14 +102,28 @@ std::vector<double> getEulerPoseFromVector(const std::vector<double>& _rvec,
                                            const Eigen::Matrix4d& _base_mat,
                                            Eigen::Matrix4d& _mat);
 Eigen::Quaterniond getQuaterionFromEulerPose(const std::vector<double>& pose);
+std::vector<double> getEulerFromQuaternion(Eigen::Quaterniond &quaternion_pose);
 
-/*
- *
- */
 std::vector<double> transEularAngleToAxisAngle(
     const std::vector<double>& _pose_vec);
 std::vector<double> transAxisAngleToEularAngle(
     const std::vector<double>& _pose);
+
+bool checkDisMatch(const Eigen::Matrix4d &_A, const Eigen::Matrix4d &_B, const double _dis_thresh);
+
+std::vector<Eigen::Matrix4d> loadPoseInfo(std::string pose_path);
+
+Eigen::Matrix3d handEyeCalibrationR(const std::vector<Eigen::Matrix4d> &_A, const std::vector<Eigen::Matrix4d> &_B);
+
+bool handEyeCalibrationNavy(const std::vector<Eigen::Matrix4d> &_A, const std::vector<Eigen::Matrix4d> &_B,
+                            Eigen::Matrix4d &_T_B2A);
+
+void octreeFilter(pcl::PointCloud<pcl::PointXYZI>::Ptr& _input_cloud,
+                  pcl::PointCloud<pcl::PointXYZI>::Ptr& _output_cloud,
+                  const float& _filter_leaf_size);
+
+int getLeafCenterPoint(pcl::PointCloud<pcl::PointXYZI>::Ptr& _input_cloud, std::vector<int>& _indices);
+
 }  // namespace calib
 }  // namespace robosense
 #endif
