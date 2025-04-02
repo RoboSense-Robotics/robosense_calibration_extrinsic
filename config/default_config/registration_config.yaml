@@ -1,6 +1,6 @@
 NDT:
-  LeafSize: [0.5, 0.5, 0.5]
-  StepSize: 0.05
+  LeafSize: 0.1
+  StepSize: 0.02
   Resolution: 1
-  MaxIteration: 50
-  Epsilon: 1e-6
+  MaxIteration: 60
+  Epsilon: 1e-7

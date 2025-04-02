@@ -189,20 +189,10 @@ void SensorCalibration::startBaseCalib() {
   BaseCalibration base_calib;
   if (base_calib.loadConfig(config_path_, ros_node_)) {
     // calibration lidar_to_baselink
-    auto lidar_to_baselink_eular_pose = base_calib.executeCalibration(straight_cloud_vec_, circle_cloud_vec_);
+    auto lidar_to_baselink_eular_pose = base_calib.executeLidarToBodyCalibration(straight_cloud_vec_, circle_cloud_vec_);
     auto quaterion = getQuaterionFromEulerPose(lidar_to_baselink_eular_pose);
     RCLCPP_INFO(ros_node_->get_logger(), "========== Lidar To Baselink Eular : roll = %f , pitch = %f , yaw = %f ", RAD2DEG(lidar_to_baselink_eular_pose[0]), RAD2DEG(lidar_to_baselink_eular_pose[1]), RAD2DEG(lidar_to_baselink_eular_pose[2]));
     RCLCPP_INFO(ros_node_->get_logger(), "========== Lidar To Baselink Quaterion(w, x, y, z) : %f , %f , %f , %f", quaterion.w(), quaterion.x(), quaterion.y(), quaterion.z());
-    // get sensor_to_baselink according lidar_to_baselink and lidar_to_sensor
-
-    Eigen::Matrix4d lidar_to_baselink_tf = getMatrixFromEulerPose(lidar_to_baselink_eular_pose);
-
-    Eigen::Matrix4d sensor_to_baselink_tf = lidar_to_sensor_tf_.inverse() * lidar_to_baselink_tf;
-
-    std::vector<double> sensor_to_baselink_euler_pose = getEulerPoseFromMatrix(sensor_to_baselink_tf);
-    Eigen::Quaterniond sensor_to_baselink_q = getQuaterionFromEulerPose(sensor_to_baselink_euler_pose);
-
-    RCLCPP_INFO(ros_node_->get_logger(), "========== Sensor To Baselink Quaterion(w, x, y, z) : %f , %f , %f , %f", sensor_to_baselink_q.w(), sensor_to_baselink_q.x(), sensor_to_baselink_q.y(), sensor_to_baselink_q.z());
   }
   clock_t end_time = clock();
   double time_duration =

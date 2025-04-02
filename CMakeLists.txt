@@ -23,42 +23,48 @@ find_package(PCL REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 find_package(yaml-cpp REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(pcl_ros REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-ament_package_xml()
 set(ROS_DISTRO "ROS 2")
+
+set(dependencies
+    rclcpp
+    pcl_conversions
+    pcl_ros
+    sensor_msgs
+    nav_msgs
+    geometry_msgs
+)
 
 set(${PROJECT_NAME}_source_files
         src/common/common_function.cpp
         src/calibration/base_calibration.cpp
-        src/calibration/sensor_calibration.cpp)
+        src/calibration/sensor_calibration.cpp
+        src/calibration/robotic_arm_calibration.cpp)
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_source_files})
+add_library(${PROJECT_NAME}_lib ${${PROJECT_NAME}_source_files})
 
-set_target_properties(
-  ${PROJECT_NAME}
-  PROPERTIES CXX_STANDARD 14
-             CXX_STANDARD_REQUIRED YES
-             CXX_EXETENSIONS NO)
+target_include_directories(${PROJECT_NAME}_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC include)
-
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
-        ${EIGEN3_INCLUDE_DIRS} 
-        ${Boost_INCLUDE_DIRS} 
-        ${YAML_CPP_INCLUDE_DIRS} 
-        ${PCL_INCLUDE_DIRS} 
+target_include_directories(${PROJECT_NAME}_lib PUBLIC
+        ${EIGEN3_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+        ${YAML_CPP_INCLUDE_DIRS}
+        ${PCL_INCLUDE_DIRS}
         ${pcl_ros_INCLUDE_DIRS}
-        ${rclcpp_INCLUDE_DIRS} 
+        ${rclcpp_INCLUDE_DIRS}
         ${sensor_msgs_INCLUDE_DIRS}
         ${pcl_conversions_INCLUDE_DIRS}
-         )
+)
 
-target_link_libraries(${PROJECT_NAME}
-        PUBLIC
-        yaml-cpp
+target_link_libraries(${PROJECT_NAME}_lib
+        ${YAML_CPP_LIBRARIES}
         ${cv_bridge_LIBRARIES}
         ${Boost_LIBRARIES}
         ${PCL_LIBRARIES}
@@ -66,21 +72,22 @@ target_link_libraries(${PROJECT_NAME}
         ${pcl_ros_LIBRARIES}
         ${rclcpp_LIBRARIES}
         ${sensor_msgs_LIBRARIES}
-        )
-
-# 添加可执行文件
-add_executable(sensor_to_body_calibration_node node/sensor_to_body_calibration_node.cpp)
-
-# 链接库
-target_link_libraries(sensor_to_body_calibration_node ${PROJECT_NAME})
-
-ament_target_dependencies(sensor_to_body_calibration_node
-  yaml-cpp
-  rclcpp
-  sensor_msgs
-  pcl_conversions
-  pcl_ros
 )
+
+target_compile_definitions(${PROJECT_NAME}_lib PUBLIC -DPROJECT_PATH="${CMAKE_CURRENT_LIST_DIR}/")
+ament_target_dependencies(${PROJECT_NAME}_lib ${dependencies})
+
+add_executable(sensor_to_arm_calibration_node node/sensor_to_arm_calibration_node.cpp)
+target_link_libraries(sensor_to_arm_calibration_node ${PROJECT_NAME}_lib)
+ament_target_dependencies(sensor_to_arm_calibration_node ${dependencies})
+
+add_executable(sensor_to_body_calibration_node node/sensor_to_body_calibration_node.cpp)
+target_link_libraries(sensor_to_body_calibration_node ${PROJECT_NAME}_lib)
+ament_target_dependencies(sensor_to_body_calibration_node ${dependencies})
+
+add_executable(test_node node/hand_eye_test.cpp)
+target_link_libraries(test_node ${PROJECT_NAME}_lib)
+ament_target_dependencies(test_node ${dependencies})
 
 install(
         DIRECTORY config
@@ -88,8 +95,11 @@ install(
       )
 
 install(TARGETS
-  ${PROJECT_NAME}
+  ${PROJECT_NAME}_lib
   sensor_to_body_calibration_node
+  sensor_to_arm_calibration_node
+  test_node
   DESTINATION lib/${PROJECT_NAME}
 )
+
 ament_package()

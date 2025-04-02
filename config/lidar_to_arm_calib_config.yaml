@@ -1,0 +1,9 @@
+LIDAR:
+    pos_cmd_topic: "/arm_pose"
+    lidar_topic: "/rs_lidar/points"
+    pos_stable_time_thresh: 20
+    pos_ok_time_thresh: 58
+    lidar_calibration_file: "/home/sti/1_catkin/cali_catkin/src/robosense_calibration_extrinsic/config/test_lidar_calibration.yaml"
+BASE:
+    lidar_registration_config_file: "/home/sti/1_catkin/cali_catkin/src/robosense_calibration_extrinsic/config/default_config/registration_config.yaml"
+    save_path: "/home/sti/data/ros2/ros2_save_rs_lidar_arm_pcd/"
